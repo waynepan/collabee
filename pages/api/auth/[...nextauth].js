@@ -7,7 +7,7 @@ export default NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
-      authorizationUrl: 'https://accounts.google.com/o/oauth2/v2/auth?prompt=consent&access_type=offline&response_type=code'
+      authorizationUrl: 'https://accounts.google.com/o/oauth2/v2/auth?scope=email%20profile&prompt=select_account&response_type=id_token'
     }),
   ],
   jwt: {
