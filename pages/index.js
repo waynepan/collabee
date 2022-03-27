@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import Pusher from 'pusher-js'
 import axios from 'axios'
 import { useSession, signIn, signOut } from "next-auth/react"
+import Image from 'next/image'
 
 const effects = {
   '👏': ['4', '7.5'],
@@ -66,7 +67,7 @@ export default function Home() {
             hover:bg-blue-100 hover:border-blue-700 hover:text-blue-600"
           onClick={() => signIn()}
         >
-          <img className="inline mb-1" src="btn-google.svg" /> Google Sign In
+          <Image className="inline mb-1" src="btn-google.svg" /> Google Sign In
         </button>
       </div>
     </div>
