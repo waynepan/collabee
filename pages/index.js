@@ -17,9 +17,9 @@ export default function Home() {
   const [audioPack, setAudioPack] = useState(null)
   const [pusher, setPusher] = useState(null)
   const { data: session } = useSession()
+  console.log(session)
 
   useEffect(() => {
-    console.log(session)
     setAudioPack(new Audio(audioPackSrc))
     const pusherClient = new Pusher('31e9185cd7028f216191', {
       cluster: 'us3'
