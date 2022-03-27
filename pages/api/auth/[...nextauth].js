@@ -15,8 +15,12 @@ export default NextAuth({
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt(token, account) {
-      return token;
+    async session({ session, token, user }) {
+      // Send properties to the client, like an access_token from a provider.
+      session.email = user.email
+      session.name = user.name
+
+      return session
     }
   }
 })
