@@ -17,7 +17,7 @@ export default function Home() {
   const [audioPack, setAudioPack] = useState(null)
   const [pusher, setPusher] = useState(null)
   const { data: session } = useSession()
-  console.log(session)
+  console.log(session?.user.email, session?.user.name)
 
   useEffect(() => {
     setAudioPack(new Audio(audioPackSrc))
@@ -110,6 +110,9 @@ export default function Home() {
                     <span>{k}</span>
               </div>
             })}
+            <div className="mt-20 w-full text-center">
+              <a href="#" className="text-gray-400 hover:underline hover:text-gray-300" onClick={() => signOut()}>sign out</a>
+            </div>
           </div>
         : authPage}
       </div>
