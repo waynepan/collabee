@@ -19,6 +19,7 @@ export default function Home() {
   const { data: session } = useSession()
 
   useEffect(() => {
+    console.log(session)
     setAudioPack(new Audio(audioPackSrc))
     const pusherClient = new Pusher('31e9185cd7028f216191', {
       cluster: 'us3'
@@ -67,7 +68,9 @@ export default function Home() {
             hover:bg-blue-100 hover:border-blue-700 hover:text-blue-600"
           onClick={() => signIn()}
         >
-          <Image className="inline mb-1" src="btn-google.svg" /> Google Sign In
+          <div className="inline align-middle">
+            <Image width="30" height="30" className="inline" src="/btn-google.svg" />
+          </div> Google Sign In
         </button>
       </div>
     </div>
@@ -76,7 +79,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>🐝 Collabee</title>
+        <title>Collabee</title>
         <meta name="description" content="Collabee - inspired by bwamp" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
