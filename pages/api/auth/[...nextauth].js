@@ -15,7 +15,13 @@ export default NextAuth({
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt(token, account) {
+    async jwt({ token, user, account, profile, isNewUser }) {
+      if (account) {
+        token.accessToken = account.access_token
+        token.email = user.email
+        token.name = user.name
+      }
+
       return token
     },
     async session({ session, token, user }) {
