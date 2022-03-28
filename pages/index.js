@@ -4,49 +4,95 @@ import Pusher from 'pusher-js'
 import axios from 'axios'
 import { useSession, signIn, signOut } from "next-auth/react"
 import Image from 'next/image'
+import { DebounceInput } from 'react-debounce-input';
+
 
 const effects = {
-  '👏': ['4', '7.5'],
-  '👏👏👏': ['9', '15']
+  '👏': [3.8, 7],
+  '👍': [102.5, 103.8],
+  '👏👏👏': [8.9, 16],
+  '👎': [72.7, 74],
+  '😮': [80.1, 82.1],
+  '😻': [17.8, 19.2],
+  '🥁🥁🥁': [43.9, 45.5],
+  '✨': [97.6, 101.2],
+  '💪': [90, 91],
+  '💰': [33.8, 35.4],
+  '🎉': [20.8, 22.7],
+  '😥🎺': [91.9, 96],
+  '🎉🎉': [24.9, 26.5],
+  '🥂🍻': [36.8, 38.2],
+  '🎉🎉🎉': [29, 30.8],
+  '🦢': [50.9, 51.6],
+  '🔥🔥🔥': [108.7, 109.9],
+  '🤯🤯🤯': [104.6, 106.9],
+  '😂🤭😂': [64.1, 66.3],
+  '🐴🐴🐴': [59.8, 62.2],
+  '⛏💀': [70.9, 71.8],
+  '🐮🐮🐮': [40, 42.7],
+  '🍖📯🔁': [52.6, 56],
+  '🐈👎👎': [74.7, 78.6],
+  '🥳🥳🥳': [111.6, 114.1],
+  '🤷‍♂️': [116.4, 117.2]
 }
 const PUSHER_CHANNEL = 'collabee'
 const PUSHER_EVENT = 'play-sound'
 
 export default function Home() {
-  const audioPackSrc = "https://storage.googleapis.com/collabee/sounds.webm"
-  const [audioPack, setAudioPack] = useState(null)
+  const audioPackSrc = "https://storage.googleapis.com/collabee/sounds4.webm"
   const [pusher, setPusher] = useState(null)
+  const [forceInteract, setForceInteract] = useState(false)
+  const [volume, setVolume] = useState(50)
   const { data: session } = useSession()
-  console.log(session)
-
+  
   useEffect(() => {
-    console.log('here', session)
-    setAudioPack(new Audio(audioPackSrc))
-    const pusherClient = new Pusher('31e9185cd7028f216191', {
-      cluster: 'us3'
-    })
-    pusherClient.subscribe(PUSHER_CHANNEL)
-    
-    pusherClient.bind(PUSHER_EVENT, (data) => {
-      console.log(data)
-    })
+    if (session && pusher === null) {
+      console.log('init pusher')
 
-    setPusher(pusherClient)
-  }, [])
+      const pusherClient = new Pusher('31e9185cd7028f216191', {
+        cluster: 'us3'
+      })
+      pusherClient.subscribe(PUSHER_CHANNEL)
+      
+      pusherClient.bind(PUSHER_EVENT, (data) => {
+        console.log('got push', data)
+        if (data?.email !== session?.user?.email) {
+          playAudio(data.effect, data.name, false)
+        }
+      })
 
-  const playAudio = (effect) => {
+      setPusher(pusherClient)
+    }
+  }, [session])
+
+  const playAudio = async(effect, broadcaster = null, broadcast = true) => {
     const [startTime, endTime] = effects[effect]
+    const audioPack = new Audio(audioPackSrc)
     audioPack.currentTime = startTime
-    audioPack.play()
-
-    axios({
-      method: 'POST',
-      url: '/api/push',
-      data: {
-        effect,
-        name: '123'
+    audioPack.volume = volume / 100
+    try {
+      await audioPack.play()
+    } catch(e) {
+      if (e.name === 'NotAllowedError') {
+        setForceInteract(true)
       }
-    })
+
+      return false
+    }
+
+    if (broadcast) {
+      axios({
+        method: 'POST',
+        url: '/api/push',
+        data: {
+          effect,
+          name: session?.user?.name,
+          email: session?.user?.email
+        }
+      })
+    } else {
+      bubble(effect, broadcaster)
+    }
 
     const interval = setInterval(() => {
       if (audioPack.currentTime > endTime) {
@@ -54,6 +100,30 @@ export default function Home() {
         clearInterval(interval)
       }
     }, 100)
+  }
+
+  const bubble = (effect, name) => {
+    const width = window.innerWidth - 200
+    const colors = ['red', 'blue', 'yellow', 'green']
+    const color = colors[Math.floor(Math.random() * colors.length)]
+    const el = document.createElement('div')
+
+    el.className = 'ease-in-out	transition-all px-4 absolute text-white max-w-fit text-l h-10 rounded-lg border-1 bg-' + color + '-400 flex items-center justify-center'
+    el.style.top = '0px'
+    el.style.left = Math.floor(Math.random() * (width - 100) + 100) + 'px'
+    el.style.transitionDuration = '2s'
+    el.innerHTML = ['<span>', effect, '&nbsp;&nbsp;', name, '</span>'].join('')
+    el.addEventListener('transitionend', (e) => {
+      if(e.target) {
+        e.target.remove()
+      }
+    })
+
+    document.getElementsByTagName('body')[0].appendChild(el);
+    setTimeout(() => {
+      el.style.top = '500px'
+      el.style.opacity = 0
+    }, 10)
   }
 
   const authPage = (
@@ -86,20 +156,49 @@ export default function Home() {
       </Head>
 
       <div className="w-full md:max-w-4xl mx-auto flex flex-wrap items-center justify-between mt-10 py-3">
-        <div className="pl-4 w-full content-center mb-10">
+        <div className="pl-4 w-full content-center mb-2">
           <h1 className="text-5xl font-semibold font-sans w-full text-center text-gray-200">
             🐝 Collabee
           </h1>
           <div className="text-center w-full italic mt-4 text-gray-500">you know what to do</div>
+          {(session && forceInteract) && 
+            <div
+              className="
+                w-full border-4 
+                mt-5
+                flex
+                border-red-400 rounded-full h-20 bg-white cursor-pointer justify-center items-center"
+              onClick={(e) => {
+                e.stopPropagation()
+                setForceInteract(false)
+              }}>
+                <span>🌈&nbsp;&nbsp;Click here to hear your colleagues!</span>
+            </div>
+          }
         </div>
 
         {session ? 
-          <div className="w-full grid grid-cols-2 gap-8 max-w-4xl">
+          <div className="w-full grid grid-cols-2 gap-x-8 gap-y-4 max-w-4xl">
+            <div></div>
+            <div className="flex justify-end text-l">
+              <div className="flex-none pr-3">🔈</div>
+              <div className="w-1/2">
+                <DebounceInput
+                  type="range"
+                  className="form-range h-6 p-0 bg-transparent w-full
+                    focus:outline-none focus:ring-0 focus:shadow-none"
+                  value={volume}
+                  onChange={(e) => (setVolume(e.target.value))}
+                  debounceTimeout={100}
+                />
+              </div>
+              <div className="flex-none pl-3">🔊</div>
+            </div>
             {Object.keys(effects).map((k) => {
               return <div 
                   className="
-                    h-20 w-full
-                    border-2 border-blue-400 rounded-full
+                    h-16 w-full
+                    border-4 border-blue-400 rounded-full
                     bg-white
                     text-3xl
                     cursor-pointer
@@ -111,9 +210,13 @@ export default function Home() {
                     <span>{k}</span>
               </div>
             })}
-            <div className="mt-20 w-full text-center">
-              <a href="#" className="text-gray-400 hover:underline hover:text-gray-300" onClick={() => signOut()}>sign out</a>
+            <div className="mt-20 w-full text-left text-gray-400">
+              connected: COMING SOON
             </div>
+            <div className="mt-20 w-full text-right">
+              <a href="#" className="text-gray-400 hover:underline hover:text-gray-300" onClick={() => signOut()}>sign out as {session.user.email}</a>
+            </div>
+            <audio className="h-1 opacity-0" preload="auto" href={audioPackSrc} />
           </div>
         : authPage}
       </div>

@@ -12,6 +12,7 @@ export default async function handler(req, res) {
 
   await pusher.trigger('collabee', 'play-sound', {
     effect: req.body.effect,
+    email: req.body.email,
     name: req.body.name,
     ts: Date.now()
   })
