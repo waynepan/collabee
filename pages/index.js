@@ -33,13 +33,15 @@ const effects = {
   '🍖📯🔁': [52.6, 56],
   '🐈👎👎': [74.7, 78.6],
   '🥳🥳🥳': [111.6, 114.1],
-  '🤷‍♂️': [116.4, 117.2]
+  '🤷‍♂️': [116.4, 117.2],
+  '🗓': [123.7, 125.2],
+  '': [0, 0]
 }
 const PUSHER_CHANNEL = 'collabee'
 const PUSHER_EVENT = 'play-sound'
 
 export default function Home() {
-  const audioPackSrc = "https://storage.googleapis.com/collabee/sounds5.webm"
+  const audioPackSrc = "https://storage.googleapis.com/collabee/sounds6.webm"
   const [pusher, setPusher] = useState(null)
   const [forceInteract, setForceInteract] = useState(false)
   const [volume, setVolume] = useState(50)
