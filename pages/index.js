@@ -216,7 +216,9 @@ export default function Home() {
             <div className="mt-20 w-full text-right">
               <a href="#" className="text-gray-400 hover:underline hover:text-gray-300" onClick={() => signOut()}>sign out as {session.user.email}</a>
             </div>
-            <audio className="h-1 opacity-0" preload="auto" href={audioPackSrc} />
+            <audio className="h-1 opacity-0" preload="auto">
+              <source src={audioPackSrc} />
+            </audio>
           </div>
         : authPage}
       </div>
