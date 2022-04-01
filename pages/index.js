@@ -4,7 +4,7 @@ import Pusher from 'pusher-js'
 import axios from 'axios'
 import { useSession, signIn, signOut } from "next-auth/react"
 import Image from 'next/image'
-import { DebounceInput } from 'react-debounce-input';
+import { useDebouncedCallback, useThrottledCallback } from 'use-debounce';
 
 
 const effects = {
@@ -67,7 +67,14 @@ export default function Home() {
     }
   }, [session])
 
-  const playAudio = async(effect, broadcaster = null, broadcast = true) => {
+  const debouncedVolume = useDebouncedCallback(
+    (value) => {
+      setVolume(value);
+    },
+    300
+  )
+
+  const playAudio = useThrottledCallback(async(effect, broadcaster = null, broadcast = true) => {
     const [startTime, endTime] = effects[effect]
     const audioPack = new Audio(audioPackSrc)
     audioPack.currentTime = startTime
@@ -102,7 +109,7 @@ export default function Home() {
         clearInterval(interval)
       }
     }, 100)
-  }
+  }, 1000)
 
   const bubble = (effect, name) => {
     const width = window.innerWidth - 200
@@ -111,9 +118,9 @@ export default function Home() {
     const el = document.createElement('div')
 
     el.className = 'ease-in-out	transition-all px-4 absolute text-white max-w-fit text-l h-10 rounded-lg border-1 bg-' + color + '-400 flex items-center justify-center'
-    el.style.top = '0px'
+    el.style.top = parseInt(window.scrollY, 10) + 'px'
     el.style.left = Math.floor(Math.random() * (width - 100) + 100) + 'px'
-    el.style.transitionDuration = '2s'
+    el.style.transitionDuration = '2.5s'
     el.innerHTML = ['<span>', effect, '&nbsp;&nbsp;', name, '</span>'].join('')
     el.addEventListener('transitionend', (e) => {
       if(e.target) {
@@ -123,7 +130,7 @@ export default function Home() {
 
     document.getElementsByTagName('body')[0].appendChild(el);
     setTimeout(() => {
-      el.style.top = '500px'
+      el.style.transform = 'translateY(800px)'
       el.style.opacity = 0
     }, 10)
   }
@@ -185,13 +192,12 @@ export default function Home() {
             <div className="flex justify-end text-l">
               <div className="flex-none pr-3">🔈</div>
               <div className="w-1/2">
-                <DebounceInput
+                <input
                   type="range"
                   className="form-range h-6 p-0 bg-transparent w-full
                     focus:outline-none focus:ring-0 focus:shadow-none"
-                  value={volume}
-                  onChange={(e) => (setVolume(e.target.value))}
-                  debounceTimeout={100}
+                  defaultValue={volume}
+                  onChange={(e) => (debouncedVolume(e.target.value))}
                 />
               </div>
               <div className="flex-none pl-3">🔊</div>
