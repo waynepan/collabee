@@ -3,10 +3,11 @@
 import Pusher from 'pusher'
 
 export default async function handler(req, res) {
+  console.log(process.env.NEXT_PUBLIC_PUSHER_APP_ID)
   const pusher = new Pusher({
-    appId: '1368034',
-    key: '31e9185cd7028f216191',
-    cluster: 'us3',
+    appId: process.env.NEXT_PUBLIC_PUSHER_APP_ID,
+    key: process.env.NEXT_PUBLIC_PUSHER_KEY,
+    cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
     secret: process.env.PUSHER_SECRET
   })
 

@@ -37,11 +37,12 @@ const effects = {
   '🗓': [123.7, 125.2],
   '': [0, 0]
 }
-const PUSHER_CHANNEL = 'collabee'
+const PUSHER_CHANNEL_PREFIX = 'collabee'
 const PUSHER_EVENT = 'play-sound'
 
 export default function Home() {
-  const audioPackSrc = "https://storage.googleapis.com/collabee/sounds6.webm"
+  const audioPackSrc = process.env.NEXT_PUBLIC_AUDIO_PACK_SRC
+  console.log(audioPackSrc)
   const [pusher, setPusher] = useState(null)
   const [forceInteract, setForceInteract] = useState(false)
   const [volume, setVolume] = useState(50)
@@ -49,15 +50,16 @@ export default function Home() {
   
   useEffect(() => {
     if (session && pusher === null) {
-      console.log('init pusher')
-
-      const pusherClient = new Pusher('31e9185cd7028f216191', {
-        cluster: 'us3'
+      const pusherClient = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
+        cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER
       })
-      pusherClient.subscribe(PUSHER_CHANNEL)
       
+      const domain = session.user?.email.split('@')[1]
+      pusherClient.subscribe(`${PUSHER_CHANNEL_PREFIX}-${domain}`)
+      console.log('push channel', `${PUSHER_CHANNEL_PREFIX}-${domain}`)
+
       pusherClient.bind(PUSHER_EVENT, (data) => {
-        console.log('got push', data)
+        console.log('received push', data)
         if (data?.email !== session?.user?.email) {
           playAudio(data.effect, data.name, false)
         }
@@ -80,6 +82,7 @@ export default function Home() {
     audioPack.currentTime = startTime
     audioPack.volume = volume / 100
     try {
+      console.log('playing', effect)
       await audioPack.play()
     } catch(e) {
       if (e.name === 'NotAllowedError') {
@@ -117,11 +120,12 @@ export default function Home() {
     const color = colors[Math.floor(Math.random() * colors.length)]
     const el = document.createElement('div')
 
-    el.className = 'ease-in-out	transition-all px-4 absolute text-white max-w-fit text-l h-10 rounded-lg border-1 bg-' + color + '-400 flex items-center justify-center'
-    el.style.top = parseInt(window.scrollY, 10) + 'px'
-    el.style.left = Math.floor(Math.random() * (width - 100) + 100) + 'px'
+    el.className = `ease-in-out	transition-all px-4 absolute text-white max-w-fit 
+                    text-l h-10 rounded-lg border-1 bg-${color}-400 flex items-center justify-center`
+    el.style.top = `${parseInt(window.scrollY, 10)}px`
+    el.style.left = `${Math.floor(Math.random() * (width - 100) + 100)}px`
     el.style.transitionDuration = '2.5s'
-    el.innerHTML = ['<span>', effect, '&nbsp;&nbsp;', name, '</span>'].join('')
+    el.innerHTML = `<span>${effect}&nbsp;&nbsp;${name}</span>`
     el.addEventListener('transitionend', (e) => {
       if(e.target) {
         e.target.remove()
@@ -219,7 +223,8 @@ export default function Home() {
               </div>
             })}
             <div className="mt-20 w-full text-left text-gray-400">
-              connected: COMING SOON
+              <p>connected: COMING SOON</p>
+              <p>made with ❤️ by <a className="text-white" target="_blank" href="https://inaccord.com/">accord</a> (inspired by bwamp.me)</p>
             </div>
             <div className="mt-20 w-full text-right">
               <a href="#" className="text-gray-400 hover:underline hover:text-gray-300" onClick={() => signOut()}>sign out as {session.user.email}</a>
