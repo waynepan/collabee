@@ -224,7 +224,7 @@ export default function Home() {
             })}
             <div className="mt-20 w-full text-left text-gray-400">
               <p>connected: COMING SOON</p>
-              <p>made with ❤️ by <a className="text-white" target="_blank" href="https://inaccord.com/">accord</a> (inspired by bwamp.me)</p>
+              <p>made with ❤️ by <a className="text-white" rel="noreferrer" target="_blank" href="https://inaccord.com/">accord</a> (inspired by bwamp.me)</p>
             </div>
             <div className="mt-20 w-full text-right">
               <a href="#" className="text-gray-400 hover:underline hover:text-gray-300" onClick={() => signOut()}>sign out as {session.user.email}</a>
