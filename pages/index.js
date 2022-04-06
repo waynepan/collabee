@@ -55,8 +55,11 @@ export default function Home() {
       })
       
       const domain = session.user?.email.split('@')[1]
-      pusherClient.subscribe(`${PUSHER_CHANNEL_PREFIX}-${domain}`)
-      console.log('push channel', `${PUSHER_CHANNEL_PREFIX}-${domain}`)
+      // pusherClient.subscribe(`${PUSHER_CHANNEL_PREFIX}-${domain}`)
+      // console.log('push channel', `${PUSHER_CHANNEL_PREFIX}-${domain}`)
+      pusherClient.subscribe(`${PUSHER_CHANNEL_PREFIX}`)
+      console.log('push channel', `${PUSHER_CHANNEL_PREFIX}`)
+
 
       pusherClient.bind(PUSHER_EVENT, (data) => {
         console.log('received push', data)
