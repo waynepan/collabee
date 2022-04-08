@@ -35,6 +35,8 @@ const effects = {
   '🥳🥳🥳': [111.6, 114.1],
   '🤷‍♂️': [116.4, 117.2],
   '🗓': [123.7, 125.2],
+  '🐰': [127, 127.5],
+  '🦗🦗🦗': [129.2, 133.2],
   '': [0, 0]
 }
 const PUSHER_CHANNEL_PREFIX = 'collabee'
@@ -42,12 +44,12 @@ const PUSHER_EVENT = 'play-sound'
 
 export default function Home() {
   const audioPackSrc = process.env.NEXT_PUBLIC_AUDIO_PACK_SRC
-  console.log(audioPackSrc)
   const [pusher, setPusher] = useState(null)
   const [forceInteract, setForceInteract] = useState(false)
   const [volume, setVolume] = useState(50)
   const { data: session } = useSession()
-  
+  const [reconnector, setReconnector] = useState(null)
+
   useEffect(() => {
     if (session && pusher === null) {
       const pusherClient = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
@@ -68,9 +70,24 @@ export default function Home() {
         }
       })
 
+      pusherClient.bind('disconnected', () => {
+        console.log('pusher is disconnected')
+      })
+
       setPusher(pusherClient)
     }
-  }, [session])
+  }, [session, pusher])
+
+  useEffect(() => {
+    setReconnector(window.setInterval(() => {
+      if (pusher && pusher.connection && pusher.connection.state !== 'connected') {
+        console.log('forcing pusher to reconnect')
+        setPusher(null)
+        window.clearInterval(reconnector)
+        setReconnector(null)
+      }
+    }, 20000))
+  }, [pusher])
 
   const debouncedVolume = useDebouncedCallback(
     (value) => {
