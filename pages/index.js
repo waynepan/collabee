@@ -48,7 +48,6 @@ export default function Home() {
   const [forceInteract, setForceInteract] = useState(false)
   const [volume, setVolume] = useState(50)
   const { data: session } = useSession()
-  const [reconnector, setReconnector] = useState(null)
 
   useEffect(() => {
     if (session && pusher === null) {
@@ -77,17 +76,6 @@ export default function Home() {
       setPusher(pusherClient)
     }
   }, [session, pusher])
-
-  useEffect(() => {
-    setReconnector(window.setInterval(() => {
-      if (pusher && pusher.connection && pusher.connection.state !== 'connected') {
-        console.log('forcing pusher to reconnect')
-        setPusher(null)
-        window.clearInterval(reconnector)
-        setReconnector(null)
-      }
-    }, 20000))
-  }, [pusher])
 
   const debouncedVolume = useDebouncedCallback(
     (value) => {
