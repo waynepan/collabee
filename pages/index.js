@@ -37,7 +37,7 @@ const effects = {
   '🗓': [123.7, 125.2],
   '🐰': [127, 127.5],
   '🦗🦗🦗': [129.2, 133.2],
-  '': [0, 0]
+  '🧠': [136.5, 138]
 }
 const PUSHER_CHANNEL_PREFIX = 'collabee'
 const PUSHER_EVENT = 'play-sound'
@@ -46,7 +46,7 @@ export default function Home() {
   const audioPackSrc = process.env.NEXT_PUBLIC_AUDIO_PACK_SRC
   const [pusher, setPusher] = useState(null)
   const [forceInteract, setForceInteract] = useState(false)
-  const [volume, setVolume] = useState(50)
+  const [volume, setVolume] = useState(30)
   const { data: session } = useSession()
 
   useEffect(() => {
