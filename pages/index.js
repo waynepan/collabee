@@ -46,7 +46,7 @@ export default function Home() {
   const audioPackSrc = process.env.NEXT_PUBLIC_AUDIO_PACK_SRC
   const [pusher, setPusher] = useState(null)
   const [forceInteract, setForceInteract] = useState(false)
-  const [volume, setVolume] = useState(30)
+  const [volume, setVolume] = useState(20)
   const { data: session } = useSession()
 
   useEffect(() => {
@@ -132,7 +132,7 @@ export default function Home() {
                     text-l h-10 rounded-lg border-1 bg-${color}-400 flex items-center justify-center`
     el.style.top = `${parseInt(window.scrollY, 10)}px`
     el.style.left = `${Math.floor(Math.random() * (width - 100) + 100)}px`
-    el.style.transitionDuration = '2.5s'
+    el.style.transitionDuration = '5s'
     el.innerHTML = `<span>${effect}&nbsp;&nbsp;${name}</span>`
     el.addEventListener('transitionend', (e) => {
       if(e.target) {
