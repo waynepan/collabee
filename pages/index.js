@@ -37,7 +37,8 @@ const effects = {
   '🗓': [123.7, 125.2],
   '🐰': [127, 127.5],
   '🦗🦗🦗': [129.2, 133.2],
-  '🧠': [136.5, 138]
+  '🧠': [136.5, 138],
+  '🦄': [141.7, 143]
 }
 const PUSHER_CHANNEL_PREFIX = 'collabee'
 const PUSHER_EVENT = 'play-sound'
