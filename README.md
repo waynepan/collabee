@@ -14,6 +14,7 @@ Live demo available at [collabee.app](https://collabee.app).
 2. [Pusher](https://pusher.com/) for realtime channels
 3. Google OAuth client
 4. for localhost development, recommend using [local-ssl-proxy](https://github.com/cameronhunter/local-ssl-proxy)
+`local-ssl-proxy --source 3001 --target 3000`
 
 The following environment variables are required
 ```
