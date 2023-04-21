@@ -39,7 +39,7 @@ const effects = {
   '🦗🦗🦗': [129.2, 133.2],
   '🧠': [136.5, 138],
   '🦄': [141.7, 143],
-  '': [0.1, 0.1]
+  '🍑': [[151.2, 152.2], [154.4, 155.4]]
 }
 const PUSHER_CHANNEL_PREFIX = 'collabee'
 const PUSHER_EVENT = 'play-sound'
@@ -77,7 +77,7 @@ export default function Home() {
 
       setPusher(pusherClient)
     }
-  }, [session, pusher])
+  }, [session, pusher, playAudio])
 
   const debouncedVolume = useDebouncedCallback(
     (value) => {
@@ -87,7 +87,9 @@ export default function Home() {
   )
 
   const playAudio = useThrottledCallback(async(effect, broadcaster = null, broadcast = true) => {
-    const [startTime, endTime] = effects[effect]
+    const [startTime, endTime] = typeof effects[effect][0] === 'object' ?
+       effects[effect][Math.floor(Math.random() * effects[effect].length)] :
+       effects[effect]
     const audioPack = new Audio(audioPackSrc)
     audioPack.currentTime = startTime
     audioPack.volume = volume / 100
