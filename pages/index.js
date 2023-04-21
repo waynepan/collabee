@@ -77,7 +77,7 @@ export default function Home() {
 
       setPusher(pusherClient)
     }
-  }, [session, pusher, playAudio])
+  }, [session, pusher])
 
   const debouncedVolume = useDebouncedCallback(
     (value) => {
